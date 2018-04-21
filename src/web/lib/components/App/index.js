@@ -43,6 +43,7 @@ const mapDispatchToProps = dispatch => ({
   clearPendingTheme: () => dispatch(actions.ui.clearPendingTheme()),
   setSelectedColor: args => dispatch(actions.ui.setSelectedColor(args)),
   setSavedThemesPage: page => dispatch(actions.ui.setSavedThemesPage({ page })),
+  setPresentThemesPage: page => dispatch(actions.ui.setPresentThemesPage({ page })),
   undo: () => dispatch(actions.theme.undo()),
   redo: () => dispatch(actions.theme.redo())
 });
@@ -65,6 +66,8 @@ export const AppComponent = ({
   savedThemes,
   savedThemesPage,
   setSavedThemesPage,
+  presentThemesPage,
+  setPresentThemesPage,
   hasSavedThemes,
   shouldOfferPendingTheme,
   clearPendingTheme,
@@ -119,7 +122,7 @@ export const AppComponent = ({
             />
           </div>
         </BrowserPreview>
-        <PresetThemeSelector {...{ setTheme }} />
+        <PresetThemeSelector {...{ setTheme, presentThemesPage, setPresentThemesPage}} />
         {hasSavedThemes && (
           <SavedThemeSelector
             {...{

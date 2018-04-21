@@ -27,7 +27,8 @@ export const actions = {
     "SET_LOADER_DELAY_EXPIRED",
     "SET_SAVED_THEMES",
     "SET_SAVED_THEMES_PAGE",
-    "SET_CURRENT_SAVED_THEME"
+    "SET_CURRENT_SAVED_THEME",
+    "SET_PRESENT_THEMES_PAGE"
   ),
   theme: {
     ...createActions({}, "SET_THEME", "SET_COLOR", "SET_BACKGROUND"),
@@ -54,6 +55,7 @@ export const selectors = {
   themeCanUndo: state => state.theme.past.length > 0,
   themeCanRedo: state => state.theme.future.length > 0,
   userHasEdited: state => state.ui.userHasEdited,
+  presentThemesPage: state => state.ui.presentThemesPage,
   modifiedSinceSave: state =>
     state.ui.userHasEdited &&
     !themesEqual(state.ui.currentSavedTheme, state.theme.present)
@@ -84,6 +86,10 @@ export const reducers = {
         ...state,
         savedThemesPage
       }),
+      SET_PRESENT_THEMES_PAGE: (state, { payload: { page: presentThemesPage } }) => ({
+        ...state,
+        presentThemesPage
+      }),
       SET_CURRENT_SAVED_THEME: (state, { payload: { currentSavedTheme } }) => ({
         ...state,
         currentSavedTheme
@@ -112,6 +118,7 @@ export const reducers = {
       pendingTheme: null,
       savedThemes: {},
       savedThemesPage: 0,
+      presentThemesPage: 0,
       currentSavedTheme: null,
       selectedColor: null,
       hasExtension: false,
