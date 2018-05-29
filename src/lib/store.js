@@ -28,7 +28,7 @@ export const actions = {
     "SET_SAVED_THEMES",
     "SET_SAVED_THEMES_PAGE",
     "SET_CURRENT_SAVED_THEME",
-    "SET_PRESENT_THEMES_PAGE"
+    "SET_PRESET_THEMES_PAGE"
   ),
   theme: {
     ...createActions({}, "SET_THEME", "SET_COLOR", "SET_BACKGROUND"),
@@ -46,19 +46,19 @@ export const selectors = {
   shouldOfferPendingTheme: state =>
     !state.ui.userHasEdited &&
     state.ui.pendingTheme !== null &&
-    !themesEqual(state.ui.pendingTheme, state.theme.present),
+    !themesEqual(state.ui.pendingTheme, state.theme.preset),
   pendingTheme: state => state.ui.pendingTheme,
   savedThemes: state => state.ui.savedThemes,
   savedThemesPage: state => state.ui.savedThemesPage,
   hasSavedThemes: state => Object.keys(state.ui.savedThemes).length > 0,
-  theme: state => state.theme.present,
+  theme: state => state.theme.preset,
   themeCanUndo: state => state.theme.past.length > 0,
   themeCanRedo: state => state.theme.future.length > 0,
   userHasEdited: state => state.ui.userHasEdited,
-  presentThemesPage: state => state.ui.presentThemesPage,
+  presetThemesPage: state => state.ui.presetThemesPage,
   modifiedSinceSave: state =>
     state.ui.userHasEdited &&
-    !themesEqual(state.ui.currentSavedTheme, state.theme.present)
+    !themesEqual(state.ui.currentSavedTheme, state.theme.preset)
 };
 
 export const reducers = {
@@ -86,9 +86,9 @@ export const reducers = {
         ...state,
         savedThemesPage
       }),
-      SET_PRESENT_THEMES_PAGE: (state, { payload: { page: presentThemesPage } }) => ({
+      SET_PRESET_THEMES_PAGE: (state, { payload: { page: presetThemesPage } }) => ({
         ...state,
-        presentThemesPage
+        presetThemesPage
       }),
       SET_CURRENT_SAVED_THEME: (state, { payload: { currentSavedTheme } }) => ({
         ...state,
@@ -118,7 +118,7 @@ export const reducers = {
       pendingTheme: null,
       savedThemes: {},
       savedThemesPage: 0,
-      presentThemesPage: 0,
+      presetThemesPage: 0,
       currentSavedTheme: null,
       selectedColor: null,
       hasExtension: false,
