@@ -1,9 +1,7 @@
 import React from "react";
 
 import PaginatedThemeSelector from "../PaginatedThemeSelector";
-
 import { presetThemes } from "../../../../lib/themes";
-
 import "./index.scss";
 
 export const PresetThemeSelector = ({ setTheme, presetThemesPage, setPresetThemesPage, deleteTheme }) => { 
@@ -24,4 +22,3 @@ export const PresetThemeSelector = ({ setTheme, presetThemesPage, setPresetTheme
 };
 
 export default PresetThemeSelector;
-

@@ -1,24 +1,21 @@
-import React from "react";
+import React, { Fragment } from "react";
 import { connect } from "react-redux";
 
 import { actions, selectors } from "../../../../lib/store";
 import { DEBUG } from "../../../../lib/utils";
 
+import AppBackground from "../AppBackground";
 import AppFooter from "../AppFooter";
 import AppHeader from "../AppHeader";
-import AppBackground from "../AppBackground";
-import BrowserPreview from "../BrowserPreview";
-import ThemeColorsEditor from "../ThemeColorsEditor";
-import PresetThemeSelector from "../PresetThemeSelector";
-import ThemeBackgroundPicker from "../ThemeBackgroundPicker";
-import Banner from "../Banner";
-import SharedThemeDialog from "../SharedThemeDialog";
 import AppLoadingIndicator from "../AppLoadingIndicator";
-import ThemeLogger from "../ThemeLogger";
-import ThemeUrl from "../ThemeUrl";
-import ThemeSaveButton from "../ThemeSaveButton";
+import Mobile from "../Mobile";
+import PresetThemeSelector from "../PresetThemeSelector";
 import SavedThemeSelector from "../SavedThemeSelector";
-import UndoRedoButtons from "../UndoRedoButtons";
+import SharedThemeDialog from "../SharedThemeDialog";
+import TermsPrivacyModal from "../TermsPrivacyModal";
+import ThemeBuilder from "../ThemeBuilder";
+import ThemeLogger from "../ThemeLogger";
+import Onboarding from "../Onboarding";
 
 import "./index.scss";
 
@@ -33,8 +30,14 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = dispatch => ({
-  setBackground: args => dispatch(actions.theme.setBackground(args)),
-  setColor: args => dispatch(actions.theme.setColor(args)),
+  setBackground: args => dispatch({
+    ...actions.theme.setBackground(args),
+    meta: { userEdit: true }
+  }),
+  setColor: args => dispatch({
+    ...actions.theme.setColor(args),
+    meta: { userEdit: true }
+  }),
   setTheme: args =>
     dispatch({
       ...actions.theme.setTheme(args),
@@ -44,6 +47,7 @@ const mapDispatchToProps = dispatch => ({
   setSelectedColor: args => dispatch(actions.ui.setSelectedColor(args)),
   setSavedThemesPage: page => dispatch(actions.ui.setSavedThemesPage({ page })),
   setPresetThemesPage: page => dispatch(actions.ui.setPresetThemesPage({ page })),
+  setDisplayLegalModal: args => dispatch(actions.ui.setDisplayLegalModal(args)),
   undo: () => dispatch(actions.theme.undo()),
   redo: () => dispatch(actions.theme.redo())
 });
@@ -59,6 +63,7 @@ export const AppComponent = ({
   themeCanUndo,
   themeCanRedo,
   hasExtension,
+  firstRun,
   loaderDelayExpired,
   selectedColor,
   setColor,
@@ -74,52 +79,80 @@ export const AppComponent = ({
   setTheme,
   setSelectedColor,
   setBackground,
+  setDisplayLegalModal,
+  displayLegalModal,
   undo,
   redo,
   storage,
   userHasEdited,
   modifiedSinceSave
 }) => (
-  <div className="app">
-    {!loaderDelayExpired && <AppLoadingIndicator {...{ loaderQuote }} />}
-    {hasExtension &&
-      shouldOfferPendingTheme && (
-        <SharedThemeDialog {...{ pendingTheme, setTheme, clearPendingTheme }} />
-      )}
-    <AppBackground {...{ theme }} />
-    {!hasExtension && !isMobile && <Banner {...{ isFirefox, addonUrl, bottom: false }} />}
-    {loaderDelayExpired && (
-      <main className="app__content">
-        <AppHeader {...{ hasExtension }} />
-        <BrowserPreview {...{ theme, size: "large" }}>
-          <div className="app__theme-element-pickers">
-            <ThemeColorsEditor
-              {...{
-                theme,
-                selectedColor,
-                setColor,
-                setSelectedColor
-              }}
-            />
-            <ThemeBackgroundPicker {...{ theme, setBackground }} />
-            {(themeCanUndo || themeCanRedo) && (
-              <UndoRedoButtons
-                {...{ undo, redo, themeCanUndo, themeCanRedo }}
+  <Fragment>
+    {isMobile && <Mobile />}
+    {!isMobile &&
+      !loaderDelayExpired && <AppLoadingIndicator {...{ loaderQuote }} />}
+    {!isMobile &&
+      loaderDelayExpired && (
+        <Fragment>
+          <AppHeader {...{ hasExtension, theme }} />
+          <div className="app">
+            {hasExtension &&
+              shouldOfferPendingTheme && (
+                <SharedThemeDialog
+                  {...{
+                    pendingTheme,
+                    setTheme,
+                    clearPendingTheme
+                  }}
+                />
+              )}
+            <AppBackground {...{ theme }} />
+            <main className="app__content">
+              <ThemeBuilder
+                {...{
+                  clipboard,
+                  modifiedSinceSave,
+                  redo,
+                  savedThemes,
+                  selectedColor,
+                  setBackground,
+                  setColor,
+                  setSelectedColor,
+                  storage,
+                  theme,
+                  themeCanRedo,
+                  themeCanUndo,
+                  undo,
+                  urlEncodeTheme,
+                  userHasEdited,
+                  hasExtension,
+                  firstRun,
+                  isFirefox,
+                  addonUrl
+                }}
               />
-            )}
-          </div>
-          <div className="app__controls">
-            <ThemeUrl {...{ theme, urlEncodeTheme, clipboard }} />
-            <ThemeSaveButton
+              {hasSavedThemes && (
+                <SavedThemeSelector
+                  {...{
+                    setTheme,
+                    savedThemes,
+                    savedThemesPage,
+                    setSavedThemesPage,
+                    deleteTheme: storage.deleteTheme
+                  }}
+                />
+              )}
+              <PresetThemeSelector {...{ setTheme }} />
+            </main>
+            <AppFooter {...{ hasExtension, setDisplayLegalModal }} />
+            <TermsPrivacyModal
               {...{
-                theme,
-                savedThemes,
-                generateThemeKey: storage.generateThemeKey,
-                putTheme: storage.putTheme,
-                userHasEdited,
-                modifiedSinceSave
+                displayLegalModal,
+                setDisplayLegalModal
               }}
             />
+            {firstRun && <Onboarding />}
+            <ThemeLogger {...{ theme }} debug={DEBUG} />
           </div>
         </BrowserPreview>
         <PresetThemeSelector {...{ setTheme, presetThemesPage, setPresetThemesPage}} />
@@ -139,6 +172,9 @@ export const AppComponent = ({
     <AppFooter />
     <ThemeLogger {...{ theme }} debug={DEBUG} />
   </div>
+        </Fragment>
+      )}
+  </Fragment>
 );
 
 export default connect(mapStateToProps, mapDispatchToProps)(AppComponent);
