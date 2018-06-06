@@ -142,7 +142,7 @@ export const AppComponent = ({
                   }}
                 />
               )}
-              <PresetThemeSelector {...{ setTheme }} />
+              <PresetThemeSelector {...{ setTheme, presetThemesPage, setPresetThemesPage}} />
             </main>
             <AppFooter {...{ hasExtension, setDisplayLegalModal }} />
             <TermsPrivacyModal
@@ -154,24 +154,6 @@ export const AppComponent = ({
             {firstRun && <Onboarding />}
             <ThemeLogger {...{ theme }} debug={DEBUG} />
           </div>
-        </BrowserPreview>
-        <PresetThemeSelector {...{ setTheme, presetThemesPage, setPresetThemesPage}} />
-        {hasSavedThemes && (
-          <SavedThemeSelector
-            {...{
-              setTheme,
-              savedThemes,
-              savedThemesPage,
-              setSavedThemesPage,
-              deleteTheme: storage.deleteTheme
-            }}
-          />
-        )}
-      </main>
-    )}
-    <AppFooter />
-    <ThemeLogger {...{ theme }} debug={DEBUG} />
-  </div>
         </Fragment>
       )}
   </Fragment>
